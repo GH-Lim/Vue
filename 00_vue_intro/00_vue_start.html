@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- Vue / 도움되는 콘솔 경고를 포함한 개발 버전 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <title>Vue Start</title>
+</head>
+<body>
+  <!-- Vue 함수를 위한 껍데기 -->
+  <div>
+    {{ message }}
+    <div id="app">
+      {{ message }} - {{ count }}
+      <button v-on:click="plus">쁘라스</button>
+      <button v-on:click="minus">마이나스</button>
+    </div>
+  </div>
+  
+  <script>
+    // Vue 코드가 작성되는 곳
+    const app = new Vue({
+      el: '#app', // element 바인딩 // CSS selector
+      data: {  // 이 Vue에서 관리할 data 들
+        // data 는 object start
+        message: 'Hello, Vue!',
+        count: 0,
+      },
+      /*
+        this.message 이 안에서 가능
+      */
+      methods: { // methods object start
+        // 이름이 겹치면 안됨! ex. method -> message 있으면 에러
+        plus: function() { // Vue 에서는 arrow function 쓰면 안됨
+          // arrow function 을 쓰면 this 가 최상위 객체인 window 를 가리킨다! ex> window.~
+          // function 키워드로 함수 정의를 해야 this 가 Vue 인스턴스를 가리킨다.
+          console.log(this)
+          this.count++
+        },
+        minus: function() {
+          this.count--
+        }
+      }
+    })
+  </script>
+</body>
+</html>

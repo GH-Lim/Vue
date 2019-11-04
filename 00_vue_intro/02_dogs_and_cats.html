@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- Vue / 도움되는 콘솔 경고를 포함한 개발 버전 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <!-- Axios -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <title>Dogs and Cats</title>
+</head>
+<body>
+  <div id="app">
+    <!-- 버튼을 누를 때 마다 getDogImage 함수를 실행한다. -->
+    <button v-on:click="getDogImage">멍멍</button>
+    <button @click="getCatImage">야옹</button>
+    <img v-bind:src="dogImage" alt="멍뭉이">
+    <img :src="catImage" alt="야옹이">
+  </div>
+
+  <script>
+    // 1. Vue instance 에 함수를 "정의할 때" 는 function 키워드를 사용한다.
+    // 2. Vue instance 에 정의된 함수 내에서 "callback 함수를 사용할 때" arrow function 을 사용한다.
+    const app = new Vue({
+      el: '#app',
+      data: {
+        dogImage: '',
+        catImage: '',
+      },
+      methods: {
+        getDogImage: function() {
+          // API URL 로 요청을 보내 응답받은 강아지 사진 url 을 Vue Instance 의 dogImage
+          // data 값에 할당한다.
+          const API_URL = 'https://dog.ceo/api/breeds/image/random'
+          axios.get(API_URL)
+            .then(response => { // Lexical Scope 내가 작성하고 있는 시점의 this(scope)를 따라간다.
+              // console.log(this.$data.dogImage)
+              // console.log(response)
+              this.dogImage = response.data.message
+            })
+        },
+        getCatImage: function() {
+          const API_URL = 'https://api.thecatapi.com/v1/images/search'
+          axios.get(API_URL)
+            .then(response => {
+              this.catImage = response.data[0].url
+            })
+        }
+      },
+      // created() { // 함수형
+      created: function() {  // Vue instance 가 생성된 후 실행하는 함수
+        this.getDogImage()
+        this.getCatImage()
+      },
+    })
+  </script>
+</body>
+</html>
