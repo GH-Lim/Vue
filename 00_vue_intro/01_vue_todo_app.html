@@ -17,8 +17,19 @@
 <body>
   <div id="app">
     <h1 v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }">Todo APP</h1>
+
+    <select v-model="showMode">
+      <option value="all">all</option>
+      <option value="notCompleted">notCompleted</option>
+      <option value="completed">completed</option>
+    </select>
+
+
     <ul>
-      <li v-for="todo in todos" v-bind:class="{ completed: todo.completed }"> <!-- v-if="!todo.completed" @click="toggleTodo(todo)"> -->
+      <li 
+        v-for="todo in todoByShowMode" 
+        v-bind:class="{ completed: todo.completed }"
+        v-bind:key="todo.id"><!-- v-if="!todo.completed" @click="toggleTodo(todo)"> -->
         <input type="checkbox" v-model="todo.completed">
         {{ todo.content }}
       </li>
@@ -28,46 +39,68 @@
     <footer>
       <button @click="clearCompleted">Clear Completed</button>
     </footer>
+
   </div>
 
 
   <script>
+    const STORAGE_KEY = 'vue-todos'
+    const todoStorage = {
+      fetch: function() {
+        // String => Array
+        return JSON.parse(localStorage.getItem(STORAGE_KEY))
+      },
+      save: function(todos) {
+        // Array => String
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
+      },
+    }
+
+
     const app = new Vue({
       el: '#app',
       data: {
         todos: [
-          {
-            content: '저녁 메뉴 고민하기',
-            completed: true,
-          },
-          {
-            content: '사다리 타기',
-            completed: false,
-          },
-          {
-            content: '약속의 2시 낮잠자기',
-            completed: false,
-          },
-          {
-            content: '야자하기',
-            completed: false,
-          },
+        //   {
+        //     id: 1,
+        //     content: '저녁 메뉴 고민하기',
+        //     completed: true,
+        //   },
+        //   {
+        //     id: 2,
+        //     content: '사다리 타기',
+        //     completed: false,
+        //   },
+        //   {
+        //     id: 3,
+        //     content: '약속의 2시 낮잠자기',
+        //     completed: false,
+        //   },
+        //   {
+        //     id: 4,
+        //     content: '야자하기',
+        //     completed: false,
+        //   },
         ],
         newTodo: '',
         activeColor: 'red',
         fontSize: 30,
+        showMode: 'all',
       },
       methods: {
-        toggleTodo: function(todo) {
-          todo.completed = !todo.completed
-        },
+        // toggleTodo: function(todo) {
+        //   todo.completed = !todo.completed
+        // },
         addTodo: function() {
           if (this.newTodo) {
             this.todos.push({
+              id: new Date().getTime(),
               content: this.newTodo,
               completed: false,
             })
             this.newTodo = ''
+
+            todoStorage.save(this.todos)
           }
         },
         // clearCompleted: function() {
@@ -85,8 +118,39 @@
           this.todos = this.todos.filter(todo => {
             return !todo.completed
           })
-        }
+          todoStorage.save(this.todos)
+        },
+        
       },
+      computed: {
+        reversedNewTodo: function() {
+          return this.newTodo.split('').reverse().join('')
+        },
+        todoByShowMode: function() {
+          if (this.showMode === 'notCompleted') {
+            return this. todos.filter(todo => {
+              return !todo.completed
+            })
+          } else if (this.showMode === 'completed') {
+            return this.todos.filter(todo => {
+              return todo.completed
+            })
+          } else { // === 'all'
+            return this.todos
+          }
+        },
+      },
+      created() {
+        this.todos = todoStorage.fetch()
+      },
+      watch: { // 특정 데이터가 바뀔 때 마다 실행하는 함수를 정의하는 곳
+        todos: { // todos 라는 data가 바뀔 때마다
+          handler: function() { // 실행되는 함수
+            todoStorage.save(this.todos)
+          },
+          deep: true,
+        }
+      }
     })
   </script>
 </body>
