@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Todo</title>
+  <style>
+    .todo-list {
+      display: inline-block;
+      width: 33%;
+
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="todo-list">
+      <h2>취업준비</h2>
+      <input v-model="newTodo" type="text" v-on:keydown.enter="addTodo">  
+      <button v-on:click="addTodo">+</button>
+      <ul>
+        <li v-for="todo in todos" v-bind:key="todo.id">
+          <span>{{ todo.content }}</span>
+          <button @click="removeTodo(todo.id)">x</button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="todo-list">
+      <h2>SSAFY</h2>
+      <input v-model="newTodo" type="text" v-on:keydown.enter="addTodo">  
+      <button v-on:click="addTodo">+</button>
+      <ul>
+        <li v-for="todo in todos" v-bind:key="todo.id">
+          <span>{{ todo.content }}</span>
+          <button @click="removeTodo(todo.id)">x</button>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="todo-list">
+      <h2>기타</h2>
+      <input v-model="newTodo" type="text" v-on:keydown.enter="addTodo">  
+      <button v-on:click="addTodo">+</button>
+      <ul>
+        <li v-for="todo in todos" v-bind:key="todo.id">
+          <span>{{ todo.content }}</span>
+          <button @click="removeTodo(todo.id)">x</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        todos: [],
+        newTodo: '',
+      },
+      methods: {
+				addTodo: function() {
+          if (this.newTodo) {
+            this.todos.push({
+              // push 로 요소 추가 하는데 object (파이썬의 딕셔너리형태)형식으로
+              // id 값과 content를 추가
+              id: new Date().getTime(),
+              // id는 현재 시간을 초 형태로 바꿔서 추가하면 고유한 값으로 볼수 있음
+              content: this.newTodo,
+              // this는 현재 이 함수를 호출한 함수or변수를 가리킴. 따라서 addTodo 안에 있는 function이
+              // 현재 이 함수라고 하면 그 위에 const app을 가리키므로 그 app의 newTodo를 위에서 v-model로 연결시켜주었으므로
+              // 동적으로 요소를 추가할 수 있음
+            })
+            this.newTodo = ''
+            // 추가하고 newTodo를 빈 string으로 바꿈
+          } else {
+            alert('값을 입력하세요!')
+          }
+				},
+				removeTodo: function(todo_id) {
+          this.todos = this.todos.filter(todo => todo.id !== todo_id)
+				}
+        // todos에 위 익명함수에 인자로 넘겨준 id값과 다른 값들만 집어넣으면
+        // 해당 id 값만 삭제한 효과랑 똑같음!
+      }
+    })
+  </script>
+</body>
+</html>
